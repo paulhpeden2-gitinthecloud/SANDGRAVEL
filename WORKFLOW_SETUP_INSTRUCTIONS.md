@@ -8,19 +8,22 @@ This modified workflow extracts contact information from PDF permits and updates
 
 ### 1. **Enhanced PDF Extraction**
 The Claude AI node now extracts:
-- ✅ Legally Responsible Party Name (NEW)
-- ✅ Legally Responsible Party Email (NEW)
+- ✅ Legally Responsible Party Name
+- ✅ Legally Responsible Party Email
 - ✅ Permittee Name
 - ✅ Permittee Email
 - ✅ Site Contact Name
 - ✅ Site Contact Email
-- ✅ Permit Number (NEW - for matching existing rows)
+- ✅ Permit Number (for matching existing rows)
 - ✅ Facility Name
+- ✅ NAICS Code(s) (from "Location of Sampling Locations" section)
+- ✅ Type of Discharge (from "Location of Sampling Locations" section)
+- ✅ Outfall Type (from "Location of Discharge into Surface Waterbody" section)
 
 ### 2. **Smart Row Matching**
 The workflow now:
 - **Matches by Permit Number** to find existing rows in your sheet
-- **Updates only the extracted fields** (Legal Name, Legal Email, Permittee Name, Permittee Email, Site Contact Name, Site Contact Email)
+- **Updates only the extracted fields** (NAICS, Type of Discharge, Outfall Type, Legal Name, Legal Email, Permittee Name, Permittee Email, Site Contact Name, Site Contact Email)
 - **Preserves existing data** in other columns (Facility Name, Address, City, Effective Date, Expiration Date)
 
 ### 3. **Updated Google Sheets Integration**
@@ -103,6 +106,9 @@ Ensure these credentials are configured:
    - Site Contact Email
    - Permit Number
    - Facility Name
+   - NAICS
+   - Type of Discharge
+   - Outfall Type
    ↓
 4. Prepare Email & Data (JavaScript)
    - Formats extracted data
@@ -123,15 +129,18 @@ Ensure these credentials are configured:
 
 ### Column Mapping
 
-| PDF Field | Google Sheet Column |
-|-----------|---------------------|
-| Legal Name | Legal Name |
-| Legal Email | Legal Email |
-| Permittee Name | Permittee Name |
-| Permittee Email | Permittee Email |
-| Site Contact Name | Site Contact Name |
-| Site Contact Email | Site Contact Email |
-| Permit Number | Permit Number (used for matching) |
+| PDF Field | PDF Section | Google Sheet Column |
+|-----------|-------------|---------------------|
+| NAICS | Location of Sampling Locations (Monitoring Point) | NAICS |
+| Type of Discharge | Location of Sampling Locations (Monitoring Point) | Type of Discharge |
+| Outfall Type | Location of Discharge into Surface Waterbody (Outfall Location) | Outfall Type |
+| Permit Number | Main permit information | Permit Number (used for matching) |
+| Legal Name | Legal Responsible Party section | Legal Name |
+| Legal Email | Legal Responsible Party section | Legal Email |
+| Permittee Name | Permittee section | Permittee Name |
+| Permittee Email | Permittee section | Permittee Email |
+| Site Contact Name | Site Contact section | Site Contact Name |
+| Site Contact Email | Site Contact section | Site Contact Email |
 
 ### Email Draft Behavior
 - **To:** Permittee Email (or Legal Email if Permittee Email not found)
@@ -151,8 +160,12 @@ Ensure these credentials are configured:
 - **Fix:** Click the node, select the correct document from the dropdown
 
 ### Issue: Claude not extracting all fields
-- **Check:** Review the PDF structure - field names may vary
-- **Fix:** Update the Claude AI prompt to include alternative field names (e.g., "Legal Responsible Person" vs "Legally Responsible Party")
+- **Check:** Review the PDF structure - field names and section headers may vary
+- **Fix:** Update the Claude AI prompt to include alternative field names or section names
+  - For NAICS: Look for "NAICS Code", "Industry Code", "SIC Code" as alternatives
+  - For Type of Discharge: Look for "Discharge Type", "Outfall Type", or similar
+  - For Outfall Type: Check "Outfall Location", "Discharge Point", or similar sections
+  - For contact info: Try "Legal Responsible Person" vs "Legally Responsible Party"
 
 ### Issue: Duplicate rows being created
 - **Check:** Ensure Permit Number is being extracted correctly
