@@ -1,0 +1,340 @@
+{
+  "name": "SAND&GRAVEL_RENEWAL_MODIFIED",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "8a1875b4-88c6-4880-a95d-9b68383619a6",
+        "responseMode": "lastNode",
+        "options": {}
+      },
+      "id": "88c0f153-ae10-4122-aa4d-30af24d107df",
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -208,
+        464
+      ],
+      "webhookId": "8a1875b4-88c6-4880-a95d-9b68383619a6"
+    },
+    {
+      "parameters": {
+        "operation": "pdf",
+        "options": {}
+      },
+      "id": "3dafa78c-d354-4a13-8c18-e02c25d2296e",
+      "name": "Extract from File",
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1,
+      "position": [
+        0,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-5-20250929",
+          "mode": "list"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Extract these fields from the PDF text:\n\nLegally Responsible Party Name — Full name of the Legally Responsible Party/Person from the Legal Responsible Party section\nLegally Responsible Party Email — Email address from the Legally Responsible Party/Person section\nPermittee Name — Combine First Name + Last Name from Permittee section\nPermittee Email — Email from Permittee section\nSite Contact Name — Combine First Name + Last Name from Site Contact section\nSite Contact Email — Email from Site Contact section\nPermit Number — The permit number/ID (look for patterns like LWG, NPDES, or similar permit identifiers)\nFacility Name — Site Project Name or facility name\n\nReturn ONLY this JSON (no markdown, no code blocks):\n{\n\"legal_name\": \"...\",\n\"legal_email\": \"...\",\n\"permittee_name\": \"...\",\n\"permittee_email\": \"...\",\n\"site_contact_name\": \"...\",\n\"site_contact_email\": \"...\",\n\"permit_number\": \"...\",\n\"facility_name\": \"...\"\n}\n\nPDF Text:\n{{ $json.text }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "cf82e0f9-066b-4891-9b4d-0bfcc466586d",
+      "name": "Claude AI Extract",
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [
+        144,
+        256
+      ],
+      "credentials": {
+        "anthropicApi": {
+          "id": "08jo4kdiZIWnT1eH",
+          "name": "PARISPDFCLAUDEAPI"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// Parse Claude response\nconst claudeResponse = $input.item.json.content?.[0]?.text || $input.item.json.text || '';\n\n// Clean response and parse JSON\nlet data;\ntry {\n  const clean = claudeResponse.replace(/```json\\n?/g, '').replace(/```/g, '').trim();\n  data = JSON.parse(clean);\n} catch (e) {\n  data = {\n    legal_name: 'ERROR',\n    legal_email: 'error@error.com',\n    permittee_name: 'ERROR',\n    permittee_email: 'error@error.com',\n    site_contact_name: 'ERROR',\n    site_contact_email: 'error@error.com',\n    permit_number: 'ERROR',\n    facility_name: 'ERROR'\n  };\n}\n\n// Get first name for greeting\nconst firstName = (data.permittee_name || data.site_contact_name || 'there').split(' ')[0];\nconst facilityName = data.facility_name || 'the facility';\nconst toEmail = data.permittee_email || data.legal_email || data.site_contact_email || 'noemail@found.com';\n\n// Build email\nconst subject = `${facilityName} - Stormwater Permit Information`;\n\nconst message = `<div style=\"font-family: Georgia, serif; font-size: 14.5px; line-height: 1.6; color: #000000;\">\n<p>Hi ${firstName},</p>\n\n<p>I wanted to reach out regarding the ${facilityName} facility and your stormwater permit requirements.</p>\n\n<p>We specialize in helping facilities like yours manage their stormwater compliance, including quarterly sampling and analysis.</p>\n\n<p>If you have any questions about your permit requirements or would like to discuss how we can assist, I'd be happy to help.</p>\n\n<p>Thank you.</p>\n\n<div style=\"margin-top: 20px; padding-top: 10px;\">\n<p style=\"margin: 0; font-family: Georgia, serif; font-style: italic; color: #000000;\">Paul Peden</p>\n<p style=\"margin: 0; font-family: Georgia, serif; font-style: italic; color: #000000;\">Environmental Scientist</p>\n<p style=\"margin: 5px 0 0 0; font-family: Georgia, serif; font-style: italic; color: #000000;\">Cell: (504) 908-2232</p>\n<p style=\"margin: 0; font-family: Georgia, serif; font-style: italic; color: #000000;\">Office: (206) 669-5965</p>\n<p style=\"margin: 0; font-family: Georgia, serif; font-style: italic; color: #000000;\">800 5th Ave, #101-251</p>\n<p style=\"margin: 0; font-family: Georgia, serif; font-style: italic; color: #000000;\">Seattle, WA 98104</p>\n<p style=\"margin: 10px 0 0 0;\">\n<img src=\"https://ci3.googleusercontent.com/mail-sig/AIorK4yeeTjkJr1xlJkiy8KmBcwha64ZpYIEyspNQd4UuKHGotaTSK0sWors_GnH321z_NMLGy9X4-4xBftLypPZhvVHPfr4jrHJHgGdNtwXLA\" width=\"200\" height=\"75\" alt=\"Blue Environmental Services\" style=\"display: block; margin: 10px 0;\">\n</p>\n<p style=\"margin: 5px 0 0 0; font-family: Georgia, serif; font-style: italic;\">\n<a href=\"http://www.blueenv.com/\" style=\"color: #1155cc; text-decoration: none;\">www.BlueEnv.com</a>\n</p>\n</div>\n</div>`;\n\nreturn {\n  json: {\n    subject: subject,\n    message: message,\n    toEmail: toEmail,\n    legal_name: data.legal_name || '',\n    legal_email: data.legal_email || '',\n    permittee_name: data.permittee_name || '',\n    permittee_email: data.permittee_email || '',\n    site_contact_name: data.site_contact_name || '',\n    site_contact_email: data.site_contact_email || '',\n    permit_number: data.permit_number || '',\n    facility_name: facilityName,\n    fileName: $input.item.binary?.data?.fileName || 'unknown.pdf',\n    processingDate: new Date().toISOString()\n  }\n};"
+      },
+      "id": "4ec5a5a5-4328-41cd-ab9f-ba1fb9c66fde",
+      "name": "Prepare Email & Data",
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        400,
+        464
+      ]
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "={{ $json.subject }}",
+        "emailType": "html",
+        "message": "={{ $json.message }}",
+        "options": {
+          "ccList": "={{ $json.site_contact_email }}",
+          "sendTo": "={{ $json.toEmail }}"
+        }
+      },
+      "id": "4d8613f7-e01c-4c58-9808-06a4ff7412ed",
+      "name": "Create Gmail Draft",
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        608,
+        464
+      ],
+      "webhookId": "2e326e43-9333-4567-94a8-61e9091375a1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "rrD5mLDNTOvTDWeg",
+          "name": "Gmail account BLUE"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "appendOrUpdate",
+        "documentId": {
+          "__rl": true,
+          "value": "YOUR_SHEET_ID_HERE",
+          "mode": "list",
+          "cachedResultName": "Sand & Gravel Sites",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/YOUR_SHEET_ID_HERE/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sand & Gravel Sites"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Permit Number": "={{ $json.permit_number }}",
+            "Legal Name": "={{ $json.legal_name }}",
+            "Legal Email": "={{ $json.legal_email }}",
+            "Permittee Name": "={{ $json.permittee_name }}",
+            "Permittee Email": "={{ $json.permittee_email }}",
+            "Site Contact Name": "={{ $json.site_contact_name }}",
+            "Site Contact Email": "={{ $json.site_contact_email }}"
+          },
+          "matchingColumns": [
+            "Permit Number"
+          ],
+          "schema": [
+            {
+              "id": "Facility Name",
+              "displayName": "Facility Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Permit Number",
+              "displayName": "Permit Number",
+              "required": false,
+              "defaultMatch": true,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Address",
+              "displayName": "Address",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "City",
+              "displayName": "City",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Effective Date",
+              "displayName": "Effective Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Expiration Date",
+              "displayName": "Expiration Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Legal Name",
+              "displayName": "Legal Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Legal Email",
+              "displayName": "Legal Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Permittee Name",
+              "displayName": "Permittee Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Permittee Email",
+              "displayName": "Permittee Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Site Contact Name",
+              "displayName": "Site Contact Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            },
+            {
+              "id": "Site Contact Email",
+              "displayName": "Site Contact Email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "111b99eb-b7f5-4b6b-8695-0333b3e24b00",
+      "name": "Update Sand & Gravel Sites Sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.4,
+      "position": [
+        608,
+        656
+      ],
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "OwBaZxkVcFxVvWPN",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Claude AI Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Claude AI Extract": {
+      "main": [
+        [
+          {
+            "node": "Prepare Email & Data",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Prepare Email & Data": {
+      "main": [
+        [
+          {
+            "node": "Update Sand & Gravel Sites Sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Create Gmail Draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create Gmail Draft": {
+      "main": [
+        []
+      ]
+    },
+    "Update Sand & Gravel Sites Sheet": {
+      "main": [
+        []
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f0f2cf7d-8f5b-43fb-86d5-631ebb485dfd",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "eb6883f111ae90786c4cb5cfb929f6d8482aba912de4f8375b4e5f68a413c5f8"
+  },
+  "id": "mqLAE59FtlawJc6s",
+  "tags": []
+}
