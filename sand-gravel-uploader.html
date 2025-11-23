@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* Emerald gemstone background */
+        /* Background ambiance */
         body::before {
             content: '';
             position: absolute;
@@ -32,82 +32,120 @@
             width: 100%;
             height: 100%;
             background-image:
-                radial-gradient(ellipse at 20% 30%, rgba(80, 200, 120, 0.3) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(46, 204, 113, 0.25) 0%, transparent 50%),
-                radial-gradient(ellipse at 50% 50%, rgba(39, 174, 96, 0.2) 0%, transparent 50%),
-                radial-gradient(ellipse at 10% 80%, rgba(52, 152, 219, 0.15) 0%, transparent 40%),
-                radial-gradient(ellipse at 90% 20%, rgba(26, 188, 156, 0.2) 0%, transparent 45%);
+                radial-gradient(ellipse at 20% 30%, rgba(100, 100, 100, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(80, 80, 80, 0.1) 0%, transparent 50%);
             background-size: cover;
             z-index: 1;
         }
 
-        /* Gemstone crystals */
-        .gemstone {
+        /* Rock styling */
+        .rock {
             position: absolute;
-            border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%;
+            border-radius: 45% 55% 52% 48% / 48% 45% 55% 52%;
             background: linear-gradient(135deg,
-                rgba(80, 200, 120, 0.6) 0%,
-                rgba(46, 204, 113, 0.8) 50%,
-                rgba(39, 174, 96, 0.9) 100%);
+                rgba(90, 85, 80, 0.9) 0%,
+                rgba(120, 110, 100, 0.8) 40%,
+                rgba(80, 75, 70, 0.9) 100%);
             box-shadow:
-                inset -5px -5px 20px rgba(255, 255, 255, 0.3),
-                inset 5px 5px 20px rgba(0, 0, 0, 0.3),
-                0 10px 30px rgba(39, 174, 96, 0.4);
+                inset -8px -8px 15px rgba(0, 0, 0, 0.5),
+                inset 5px 5px 10px rgba(150, 140, 130, 0.3),
+                0 15px 35px rgba(0, 0, 0, 0.4);
             animation: float 6s ease-in-out infinite;
+            transition: all 0.5s ease;
         }
 
-        .gemstone::after {
+        /* Rock texture */
+        .rock::before {
             content: '';
             position: absolute;
-            top: 10%;
-            left: 15%;
-            width: 40%;
-            height: 40%;
-            background: linear-gradient(135deg,
-                rgba(255, 255, 255, 0.6) 0%,
-                transparent 70%);
-            border-radius: 50%;
-            filter: blur(10px);
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 30% 20%, rgba(100, 95, 90, 0.4) 5px, transparent 5px),
+                radial-gradient(circle at 70% 60%, rgba(70, 65, 60, 0.3) 8px, transparent 8px),
+                radial-gradient(circle at 50% 80%, rgba(90, 85, 80, 0.3) 6px, transparent 6px);
+            border-radius: inherit;
         }
 
-        .gemstone:nth-child(1) {
-            width: 180px;
-            height: 200px;
+        /* Rock highlight */
+        .rock::after {
+            content: '';
+            position: absolute;
+            top: 15%;
+            left: 20%;
+            width: 30%;
+            height: 30%;
+            background: linear-gradient(135deg,
+                rgba(180, 170, 160, 0.4) 0%,
+                transparent 70%);
+            border-radius: 50%;
+            filter: blur(8px);
+        }
+
+        .rock:nth-child(1) {
+            width: 150px;
+            height: 140px;
             top: 10%;
             left: 15%;
             animation-delay: 0s;
         }
 
-        .gemstone:nth-child(2) {
-            width: 150px;
-            height: 170px;
+        .rock:nth-child(2) {
+            width: 120px;
+            height: 130px;
             top: 60%;
             right: 10%;
             animation-delay: 2s;
         }
 
-        .gemstone:nth-child(3) {
-            width: 120px;
-            height: 140px;
+        .rock:nth-child(3) {
+            width: 100px;
+            height: 110px;
             bottom: 15%;
             left: 8%;
             animation-delay: 4s;
         }
 
-        .gemstone:nth-child(4) {
-            width: 100px;
-            height: 120px;
+        .rock:nth-child(4) {
+            width: 90px;
+            height: 95px;
             top: 25%;
             right: 25%;
             animation-delay: 1s;
         }
 
-        .gemstone:nth-child(5) {
-            width: 90px;
-            height: 110px;
+        .rock:nth-child(5) {
+            width: 80px;
+            height: 85px;
             top: 70%;
             left: 40%;
             animation-delay: 3s;
+        }
+
+        .rock:nth-child(6) {
+            width: 110px;
+            height: 105px;
+            top: 40%;
+            left: 5%;
+            animation-delay: 2.5s;
+        }
+
+        .rock:nth-child(7) {
+            width: 95px;
+            height: 100px;
+            top: 15%;
+            right: 5%;
+            animation-delay: 1.5s;
+        }
+
+        .rock:nth-child(8) {
+            width: 85px;
+            height: 90px;
+            bottom: 25%;
+            right: 20%;
+            animation-delay: 3.5s;
         }
 
         @keyframes float {
@@ -116,6 +154,49 @@
             }
             50% {
                 transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        /* Sand particle */
+        .sand-particle {
+            position: absolute;
+            width: 3px;
+            height: 3px;
+            background: rgba(194, 178, 128, 0.9);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 5;
+        }
+
+        /* Rock burst animation */
+        @keyframes rockBurst {
+            0% {
+                transform: scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            50% {
+                transform: scale(1.3) rotate(180deg);
+                opacity: 0.7;
+            }
+            100% {
+                transform: scale(0) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        .rock.bursting {
+            animation: rockBurst 0.6s ease-out forwards;
+        }
+
+        /* Sand falling animation */
+        @keyframes sandFall {
+            0% {
+                transform: translateY(0) translateX(0) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) translateX(var(--drift)) rotate(720deg);
+                opacity: 0.3;
             }
         }
 
@@ -156,34 +237,34 @@
         }
 
         .upload-area {
-            border: 3px dashed rgba(80, 200, 120, 0.5);
+            border: 3px dashed rgba(194, 178, 128, 0.5);
             border-radius: 20px;
             padding: 50px 30px;
             text-align: center;
             margin-bottom: 30px;
-            background: rgba(46, 204, 113, 0.05);
+            background: rgba(194, 178, 128, 0.05);
             backdrop-filter: blur(10px);
             transition: all 0.3s ease;
             cursor: pointer;
         }
 
         .upload-area:hover {
-            border-color: rgba(80, 200, 120, 0.8);
-            background: rgba(46, 204, 113, 0.1);
-            box-shadow: 0 0 30px rgba(46, 204, 113, 0.3);
+            border-color: rgba(210, 180, 140, 0.8);
+            background: rgba(194, 178, 128, 0.1);
+            box-shadow: 0 0 30px rgba(194, 178, 128, 0.3);
         }
 
         .upload-area.dragover {
-            border-color: #50c878;
-            background: rgba(46, 204, 113, 0.15);
+            border-color: rgba(210, 180, 140, 1);
+            background: rgba(194, 178, 128, 0.15);
             transform: scale(1.02);
         }
 
         .upload-icon {
             font-size: 4em;
-            color: #50c878;
+            color: #c2b280;
             margin-bottom: 20px;
-            text-shadow: 0 0 20px rgba(80, 200, 120, 0.5);
+            text-shadow: 0 0 20px rgba(194, 178, 128, 0.5);
         }
 
         .upload-text {
@@ -216,11 +297,11 @@
             align-items: center;
             padding: 10px 15px;
             margin: 5px 0;
-            background: rgba(46, 204, 113, 0.15);
+            background: rgba(194, 178, 128, 0.15);
             border-radius: 8px;
             color: #ecf0f1;
             font-size: 0.9em;
-            border: 1px solid rgba(80, 200, 120, 0.3);
+            border: 1px solid rgba(210, 180, 140, 0.3);
         }
 
         .file-item .remove-btn {
@@ -261,23 +342,23 @@
             overflow: hidden;
         }
 
-        /* Glassmorphic emerald buttons */
+        /* Glassmorphic sandy buttons */
         .upload-btn {
-            background: rgba(46, 204, 113, 0.3);
+            background: rgba(194, 178, 128, 0.3);
             backdrop-filter: blur(15px);
             -webkit-backdrop-filter: blur(15px);
             color: #ecf0f1;
-            border: 2px solid rgba(80, 200, 120, 0.5);
+            border: 2px solid rgba(210, 180, 140, 0.5);
             box-shadow:
-                0 8px 32px rgba(46, 204, 113, 0.3),
+                0 8px 32px rgba(194, 178, 128, 0.3),
                 inset 0 1px 1px rgba(255, 255, 255, 0.2);
         }
 
         .upload-btn:hover {
-            background: rgba(46, 204, 113, 0.5);
-            border-color: rgba(80, 200, 120, 0.8);
+            background: rgba(194, 178, 128, 0.5);
+            border-color: rgba(210, 180, 140, 0.8);
             box-shadow:
-                0 12px 40px rgba(46, 204, 113, 0.5),
+                0 12px 40px rgba(194, 178, 128, 0.5),
                 inset 0 1px 1px rgba(255, 255, 255, 0.3);
             transform: translateY(-2px);
         }
@@ -317,9 +398,9 @@
         }
 
         .status-message.success {
-            background: rgba(46, 204, 113, 0.2);
-            color: #2ecc71;
-            border: 1px solid rgba(46, 204, 113, 0.5);
+            background: rgba(194, 178, 128, 0.2);
+            color: #d2b48c;
+            border: 1px solid rgba(210, 180, 140, 0.5);
             display: block;
         }
 
@@ -349,10 +430,10 @@
 
         .progress-fill {
             height: 100%;
-            background: linear-gradient(90deg, #2ecc71, #50c878);
+            background: linear-gradient(90deg, #c2b280, #d2b48c);
             width: 0%;
             transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(46, 204, 113, 0.8);
+            box-shadow: 0 0 10px rgba(194, 178, 128, 0.8);
         }
 
         /* Scrollbar styling */
@@ -366,12 +447,12 @@
         }
 
         .file-list::-webkit-scrollbar-thumb {
-            background: rgba(46, 204, 113, 0.5);
+            background: rgba(194, 178, 128, 0.5);
             border-radius: 10px;
         }
 
         .file-list::-webkit-scrollbar-thumb:hover {
-            background: rgba(46, 204, 113, 0.7);
+            background: rgba(194, 178, 128, 0.7);
         }
 
         @media (max-width: 600px) {
@@ -390,12 +471,15 @@
     </style>
 </head>
 <body>
-    <!-- Gemstone decorations -->
-    <div class="gemstone"></div>
-    <div class="gemstone"></div>
-    <div class="gemstone"></div>
-    <div class="gemstone"></div>
-    <div class="gemstone"></div>
+    <!-- Rock decorations -->
+    <div class="rock"></div>
+    <div class="rock"></div>
+    <div class="rock"></div>
+    <div class="rock"></div>
+    <div class="rock"></div>
+    <div class="rock"></div>
+    <div class="rock"></div>
+    <div class="rock"></div>
 
     <div class="container">
         <h1>Sand & Gravel Processor 2025</h1>
@@ -506,6 +590,95 @@
             setTimeout(() => hideStatus(), 2000);
         });
 
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+        }
+
+        function hideStatus() {
+            statusMessage.className = 'status-message';
+        }
+
+        // Rock burst and sand animation
+        function burstRocksIntoSand() {
+            const rocks = document.querySelectorAll('.rock');
+
+            rocks.forEach((rock, index) => {
+                setTimeout(() => {
+                    // Get rock position
+                    const rect = rock.getBoundingClientRect();
+                    const centerX = rect.left + rect.width / 2;
+                    const centerY = rect.top + rect.height / 2;
+
+                    // Add bursting class
+                    rock.classList.add('bursting');
+
+                    // Create sand particles
+                    const particleCount = 50 + Math.random() * 30; // 50-80 particles per rock
+
+                    for (let i = 0; i < particleCount; i++) {
+                        setTimeout(() => {
+                            createSandParticle(centerX, centerY);
+                        }, i * 10); // Stagger particle creation
+                    }
+
+                    // Remove rock after burst
+                    setTimeout(() => {
+                        rock.style.display = 'none';
+                    }, 600);
+                }, index * 150); // Stagger rock bursts
+            });
+        }
+
+        function createSandParticle(startX, startY) {
+            const particle = document.createElement('div');
+            particle.className = 'sand-particle';
+
+            // Random size variation
+            const size = 2 + Math.random() * 3;
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+
+            // Starting position
+            particle.style.left = startX + 'px';
+            particle.style.top = startY + 'px';
+
+            // Random drift
+            const drift = (Math.random() - 0.5) * 200;
+            particle.style.setProperty('--drift', drift + 'px');
+
+            // Random fall duration
+            const duration = 2 + Math.random() * 2;
+            particle.style.animation = `sandFall ${duration}s ease-in forwards`;
+
+            // Color variation
+            const colors = [
+                'rgba(194, 178, 128, 0.9)',
+                'rgba(210, 180, 140, 0.9)',
+                'rgba(222, 184, 135, 0.9)',
+                'rgba(188, 143, 143, 0.8)',
+                'rgba(205, 192, 176, 0.9)'
+            ];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+
+            document.body.appendChild(particle);
+
+            // Remove particle after animation
+            setTimeout(() => {
+                particle.remove();
+            }, duration * 1000);
+        }
+
+        function resetRocks() {
+            const rocks = document.querySelectorAll('.rock');
+            rocks.forEach(rock => {
+                rock.classList.remove('bursting');
+                rock.style.display = '';
+            });
+        }
+
+        // Update the process button handler to trigger animation on success
+        const originalProcessHandler = processBtn.onclick;
         processBtn.addEventListener('click', async () => {
             if (selectedFiles.length === 0) {
                 showStatus('Please select at least one PDF file', 'error');
@@ -555,6 +728,16 @@
             // Show final status
             if (errorCount === 0) {
                 showStatus(`✅ Successfully processed ${successCount} file(s)!`, 'success');
+
+                // Trigger rock burst animation on success!
+                setTimeout(() => {
+                    burstRocksIntoSand();
+                }, 500);
+
+                // Reset rocks after animation completes
+                setTimeout(() => {
+                    resetRocks();
+                }, 8000);
             } else if (successCount === 0) {
                 showStatus(`❌ Failed to process all files. Check console for details.`, 'error');
             } else {
@@ -569,15 +752,6 @@
                 progressBar.style.display = 'none';
             }, 3000);
         });
-
-        function showStatus(message, type) {
-            statusMessage.textContent = message;
-            statusMessage.className = `status-message ${type}`;
-        }
-
-        function hideStatus() {
-            statusMessage.className = 'status-message';
-        }
     </script>
 </body>
 </html>
