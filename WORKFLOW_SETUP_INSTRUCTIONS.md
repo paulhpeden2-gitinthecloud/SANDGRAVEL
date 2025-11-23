@@ -16,9 +16,9 @@ The Claude AI node now extracts:
 - ✅ Site Contact Email
 - ✅ Permit Number (for matching existing rows)
 - ✅ Facility Name
-- ✅ NAICS Code(s) (from "Location of Sampling Locations" section)
-- ✅ Type of Discharge (from "Location of Sampling Locations" section)
-- ✅ Outfall Type (from "Location of Discharge into Surface Waterbody" section)
+- ✅ **ALL unique** NAICS Code(s) (from "Location of Sampling Locations" section - comma-separated if multiple)
+- ✅ **ALL unique** Type of Discharge (from "Location of Sampling Locations" section - comma-separated if multiple)
+- ✅ **ALL unique** Outfall Type (from "Location of Discharge into Surface Waterbody" section - comma-separated if multiple)
 
 ### 2. **Smart Row Matching**
 The workflow now:
@@ -129,18 +129,18 @@ Ensure these credentials are configured:
 
 ### Column Mapping
 
-| PDF Field | PDF Section | Google Sheet Column |
-|-----------|-------------|---------------------|
-| NAICS | Location of Sampling Locations (Monitoring Point) | NAICS |
-| Type of Discharge | Location of Sampling Locations (Monitoring Point) | Type of Discharge |
-| Outfall Type | Location of Discharge into Surface Waterbody (Outfall Location) | Outfall Type |
-| Permit Number | Main permit information | Permit Number (used for matching) |
-| Legal Name | Legal Responsible Party section | Legal Name |
-| Legal Email | Legal Responsible Party section | Legal Email |
-| Permittee Name | Permittee section | Permittee Name |
-| Permittee Email | Permittee section | Permittee Email |
-| Site Contact Name | Site Contact section | Site Contact Name |
-| Site Contact Email | Site Contact section | Site Contact Email |
+| PDF Field | PDF Section | Google Sheet Column | Notes |
+|-----------|-------------|---------------------|-------|
+| NAICS | Location of Sampling Locations (Monitoring Point) | NAICS | **Comma-separated if multiple unique values** |
+| Type of Discharge | Location of Sampling Locations (Monitoring Point) | Type of Discharge | **Comma-separated if multiple unique values** |
+| Outfall Type | Location of Discharge into Surface Waterbody (Outfall Location) | Outfall Type | **Comma-separated if multiple unique values** |
+| Permit Number | Main permit information | Permit Number (used for matching) | Single value |
+| Legal Name | Legal Responsible Party section | Legal Name | Single value |
+| Legal Email | Legal Responsible Party section | Legal Email | Single value |
+| Permittee Name | Permittee section | Permittee Name | Single value |
+| Permittee Email | Permittee section | Permittee Email | Single value |
+| Site Contact Name | Site Contact section | Site Contact Name | Single value |
+| Site Contact Email | Site Contact section | Site Contact Email | Single value |
 
 ### Email Draft Behavior
 - **To:** Permittee Email (or Legal Email if Permittee Email not found)
