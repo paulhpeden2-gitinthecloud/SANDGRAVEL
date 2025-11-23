@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sand & Gravel Processor 2025</title>
+    <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Special Elite', 'Courier New', monospace;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Emerald gemstone background */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(ellipse at 20% 30%, rgba(80, 200, 120, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 70%, rgba(46, 204, 113, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(39, 174, 96, 0.2) 0%, transparent 50%),
+                radial-gradient(ellipse at 10% 80%, rgba(52, 152, 219, 0.15) 0%, transparent 40%),
+                radial-gradient(ellipse at 90% 20%, rgba(26, 188, 156, 0.2) 0%, transparent 45%);
+            background-size: cover;
+            z-index: 1;
+        }
+
+        /* Gemstone crystals */
+        .gemstone {
+            position: absolute;
+            border-radius: 50% 50% 40% 60% / 60% 40% 60% 40%;
+            background: linear-gradient(135deg,
+                rgba(80, 200, 120, 0.6) 0%,
+                rgba(46, 204, 113, 0.8) 50%,
+                rgba(39, 174, 96, 0.9) 100%);
+            box-shadow:
+                inset -5px -5px 20px rgba(255, 255, 255, 0.3),
+                inset 5px 5px 20px rgba(0, 0, 0, 0.3),
+                0 10px 30px rgba(39, 174, 96, 0.4);
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .gemstone::after {
+            content: '';
+            position: absolute;
+            top: 10%;
+            left: 15%;
+            width: 40%;
+            height: 40%;
+            background: linear-gradient(135deg,
+                rgba(255, 255, 255, 0.6) 0%,
+                transparent 70%);
+            border-radius: 50%;
+            filter: blur(10px);
+        }
+
+        .gemstone:nth-child(1) {
+            width: 180px;
+            height: 200px;
+            top: 10%;
+            left: 15%;
+            animation-delay: 0s;
+        }
+
+        .gemstone:nth-child(2) {
+            width: 150px;
+            height: 170px;
+            top: 60%;
+            right: 10%;
+            animation-delay: 2s;
+        }
+
+        .gemstone:nth-child(3) {
+            width: 120px;
+            height: 140px;
+            bottom: 15%;
+            left: 8%;
+            animation-delay: 4s;
+        }
+
+        .gemstone:nth-child(4) {
+            width: 100px;
+            height: 120px;
+            top: 25%;
+            right: 25%;
+            animation-delay: 1s;
+        }
+
+        .gemstone:nth-child(5) {
+            width: 90px;
+            height: 110px;
+            top: 70%;
+            left: 40%;
+            animation-delay: 3s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(5deg);
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 60px 50px;
+            max-width: 650px;
+            width: 90%;
+            box-shadow:
+                0 20px 60px rgba(0, 0, 0, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2),
+                0 0 80px rgba(46, 204, 113, 0.3);
+            border: 1px solid rgba(80, 200, 120, 0.3);
+        }
+
+        h1 {
+            text-align: center;
+            color: #ecf0f1;
+            font-size: 2.5em;
+            margin-bottom: 15px;
+            text-shadow:
+                2px 2px 4px rgba(0, 0, 0, 0.7),
+                0 0 20px rgba(46, 204, 113, 0.6);
+            letter-spacing: 2px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #bdc3c7;
+            font-size: 0.9em;
+            margin-bottom: 40px;
+            letter-spacing: 1px;
+        }
+
+        .upload-area {
+            border: 3px dashed rgba(80, 200, 120, 0.5);
+            border-radius: 20px;
+            padding: 50px 30px;
+            text-align: center;
+            margin-bottom: 30px;
+            background: rgba(46, 204, 113, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(80, 200, 120, 0.8);
+            background: rgba(46, 204, 113, 0.1);
+            box-shadow: 0 0 30px rgba(46, 204, 113, 0.3);
+        }
+
+        .upload-area.dragover {
+            border-color: #50c878;
+            background: rgba(46, 204, 113, 0.15);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 4em;
+            color: #50c878;
+            margin-bottom: 20px;
+            text-shadow: 0 0 20px rgba(80, 200, 120, 0.5);
+        }
+
+        .upload-text {
+            color: #ecf0f1;
+            font-size: 1.2em;
+            margin-bottom: 10px;
+        }
+
+        .upload-hint {
+            color: #95a5a6;
+            font-size: 0.9em;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .file-list {
+            margin: 20px 0;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .file-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 15px;
+            margin: 5px 0;
+            background: rgba(46, 204, 113, 0.15);
+            border-radius: 8px;
+            color: #ecf0f1;
+            font-size: 0.9em;
+            border: 1px solid rgba(80, 200, 120, 0.3);
+        }
+
+        .file-item .remove-btn {
+            background: rgba(231, 76, 60, 0.7);
+            border: none;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Special Elite', monospace;
+            font-size: 0.8em;
+            transition: all 0.3s ease;
+        }
+
+        .file-item .remove-btn:hover {
+            background: rgba(231, 76, 60, 1);
+            transform: scale(1.05);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        button {
+            flex: 1;
+            padding: 18px 35px;
+            font-size: 1.1em;
+            font-family: 'Special Elite', 'Courier New', monospace;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            font-weight: bold;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Glassmorphic emerald buttons */
+        .upload-btn {
+            background: rgba(46, 204, 113, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: #ecf0f1;
+            border: 2px solid rgba(80, 200, 120, 0.5);
+            box-shadow:
+                0 8px 32px rgba(46, 204, 113, 0.3),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .upload-btn:hover {
+            background: rgba(46, 204, 113, 0.5);
+            border-color: rgba(80, 200, 120, 0.8);
+            box-shadow:
+                0 12px 40px rgba(46, 204, 113, 0.5),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .upload-btn:active {
+            transform: translateY(0);
+        }
+
+        .clear-btn {
+            background: rgba(149, 165, 166, 0.3);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            color: #ecf0f1;
+            border: 2px solid rgba(189, 195, 199, 0.5);
+            box-shadow:
+                0 8px 32px rgba(149, 165, 166, 0.2),
+                inset 0 1px 1px rgba(255, 255, 255, 0.2);
+        }
+
+        .clear-btn:hover {
+            background: rgba(149, 165, 166, 0.5);
+            border-color: rgba(189, 195, 199, 0.8);
+            box-shadow:
+                0 12px 40px rgba(149, 165, 166, 0.4),
+                inset 0 1px 1px rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .status-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 0.95em;
+            display: none;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-message.success {
+            background: rgba(46, 204, 113, 0.2);
+            color: #2ecc71;
+            border: 1px solid rgba(46, 204, 113, 0.5);
+            display: block;
+        }
+
+        .status-message.error {
+            background: rgba(231, 76, 60, 0.2);
+            color: #e74c3c;
+            border: 1px solid rgba(231, 76, 60, 0.5);
+            display: block;
+        }
+
+        .status-message.processing {
+            background: rgba(52, 152, 219, 0.2);
+            color: #3498db;
+            border: 1px solid rgba(52, 152, 219, 0.5);
+            display: block;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 15px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #2ecc71, #50c878);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.8);
+        }
+
+        /* Scrollbar styling */
+        .file-list::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .file-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+        }
+
+        .file-list::-webkit-scrollbar-thumb {
+            background: rgba(46, 204, 113, 0.5);
+            border-radius: 10px;
+        }
+
+        .file-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(46, 204, 113, 0.7);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 40px 25px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Gemstone decorations -->
+    <div class="gemstone"></div>
+    <div class="gemstone"></div>
+    <div class="gemstone"></div>
+    <div class="gemstone"></div>
+    <div class="gemstone"></div>
+
+    <div class="container">
+        <h1>Sand & Gravel Processor 2025</h1>
+        <p class="subtitle">Upload multiple PDF permits for automated processing</p>
+
+        <div class="upload-area" id="uploadArea">
+            <div class="upload-icon">📄</div>
+            <p class="upload-text">Drop PDF files here or click to browse</p>
+            <p class="upload-hint">Multiple files supported • PDF only</p>
+        </div>
+
+        <input type="file" id="fileInput" accept=".pdf" multiple>
+
+        <div class="file-list" id="fileList" style="display: none;"></div>
+
+        <div class="button-group">
+            <button class="clear-btn" id="clearBtn">Clear All</button>
+            <button class="upload-btn" id="processBtn">Process PDFs</button>
+        </div>
+
+        <div class="progress-bar" id="progressBar">
+            <div class="progress-fill" id="progressFill"></div>
+        </div>
+
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script>
+        // IMPORTANT: Replace this with your actual N8N webhook URL
+        const WEBHOOK_URL = 'https://your-n8n-instance.com/webhook/8a1875b4-88c6-4880-a95d-9b68383619a6';
+
+        let selectedFiles = [];
+
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileList = document.getElementById('fileList');
+        const clearBtn = document.getElementById('clearBtn');
+        const processBtn = document.getElementById('processBtn');
+        const statusMessage = document.getElementById('statusMessage');
+        const progressBar = document.getElementById('progressBar');
+        const progressFill = document.getElementById('progressFill');
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        // File selection
+        fileInput.addEventListener('change', (e) => {
+            handleFiles(e.target.files);
+        });
+
+        // Drag and drop
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            handleFiles(e.dataTransfer.files);
+        });
+
+        function handleFiles(files) {
+            const pdfFiles = Array.from(files).filter(file => file.type === 'application/pdf');
+
+            if (pdfFiles.length === 0) {
+                showStatus('Please select PDF files only', 'error');
+                return;
+            }
+
+            selectedFiles = [...selectedFiles, ...pdfFiles];
+            updateFileList();
+            showStatus(`${pdfFiles.length} file(s) added`, 'success');
+            setTimeout(() => hideStatus(), 2000);
+        }
+
+        function updateFileList() {
+            if (selectedFiles.length === 0) {
+                fileList.style.display = 'none';
+                return;
+            }
+
+            fileList.style.display = 'block';
+            fileList.innerHTML = selectedFiles.map((file, index) => `
+                <div class="file-item">
+                    <span>📄 ${file.name}</span>
+                    <button class="remove-btn" onclick="removeFile(${index})">Remove</button>
+                </div>
+            `).join('');
+        }
+
+        function removeFile(index) {
+            selectedFiles.splice(index, 1);
+            updateFileList();
+        }
+
+        clearBtn.addEventListener('click', () => {
+            selectedFiles = [];
+            fileInput.value = '';
+            updateFileList();
+            hideStatus();
+            progressBar.style.display = 'none';
+            showStatus('All files cleared', 'success');
+            setTimeout(() => hideStatus(), 2000);
+        });
+
+        processBtn.addEventListener('click', async () => {
+            if (selectedFiles.length === 0) {
+                showStatus('Please select at least one PDF file', 'error');
+                return;
+            }
+
+            // Check if webhook URL is configured
+            if (WEBHOOK_URL.includes('your-n8n-instance.com')) {
+                showStatus('⚠️ Please update the WEBHOOK_URL in the HTML file with your actual N8N webhook URL', 'error');
+                return;
+            }
+
+            showStatus(`Processing ${selectedFiles.length} file(s)...`, 'processing');
+            progressBar.style.display = 'block';
+            progressFill.style.width = '0%';
+
+            let successCount = 0;
+            let errorCount = 0;
+
+            for (let i = 0; i < selectedFiles.length; i++) {
+                const file = selectedFiles[i];
+                const formData = new FormData();
+                formData.append('data', file);
+
+                try {
+                    const response = await fetch(WEBHOOK_URL, {
+                        method: 'POST',
+                        body: formData
+                    });
+
+                    if (response.ok) {
+                        successCount++;
+                    } else {
+                        errorCount++;
+                        console.error(`Failed to upload ${file.name}:`, response.statusText);
+                    }
+                } catch (error) {
+                    errorCount++;
+                    console.error(`Error uploading ${file.name}:`, error);
+                }
+
+                // Update progress
+                const progress = ((i + 1) / selectedFiles.length) * 100;
+                progressFill.style.width = `${progress}%`;
+            }
+
+            // Show final status
+            if (errorCount === 0) {
+                showStatus(`✅ Successfully processed ${successCount} file(s)!`, 'success');
+            } else if (successCount === 0) {
+                showStatus(`❌ Failed to process all files. Check console for details.`, 'error');
+            } else {
+                showStatus(`⚠️ Processed ${successCount} file(s), ${errorCount} failed. Check console for details.`, 'error');
+            }
+
+            // Clear files after processing
+            setTimeout(() => {
+                selectedFiles = [];
+                fileInput.value = '';
+                updateFileList();
+                progressBar.style.display = 'none';
+            }, 3000);
+        });
+
+        function showStatus(message, type) {
+            statusMessage.textContent = message;
+            statusMessage.className = `status-message ${type}`;
+        }
+
+        function hideStatus() {
+            statusMessage.className = 'status-message';
+        }
+    </script>
+</body>
+</html>
