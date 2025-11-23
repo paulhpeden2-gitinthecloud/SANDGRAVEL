@@ -122,10 +122,10 @@
         "columns": {
           "mappingMode": "defineBelow",
           "value": {
-            "Permit Number": "={{ $json.permit_number }}",
             "NAICS": "={{ $json.naics }}",
             "Type of Discharge": "={{ $json.type_of_discharge }}",
             "Outfall Type": "={{ $json.outfall_type }}",
+            "Permit Number": "={{ $json.permit_number }}",
             "Legal Name": "={{ $json.legal_name }}",
             "Legal Email": "={{ $json.legal_email }}",
             "Permittee Name": "={{ $json.permittee_name }}",
