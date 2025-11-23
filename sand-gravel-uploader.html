@@ -23,7 +23,7 @@
             overflow: hidden;
         }
 
-        /* Background ambiance */
+        /* Rock quarry background */
         body::before {
             content: '';
             position: absolute;
@@ -31,17 +31,33 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-image:
-                radial-gradient(ellipse at 20% 30%, rgba(100, 100, 100, 0.1) 0%, transparent 50%),
-                radial-gradient(ellipse at 80% 70%, rgba(80, 80, 80, 0.1) 0%, transparent 50%);
-            background-size: cover;
+            background:
+                linear-gradient(180deg, rgba(0,0,0,0.3) 0%, transparent 40%, rgba(60,50,40,0.4) 100%),
+                repeating-linear-gradient(90deg, rgba(80,70,60,0.1) 0px, transparent 2px, transparent 8px),
+                repeating-linear-gradient(0deg, rgba(70,60,50,0.1) 0px, transparent 2px, transparent 12px);
             z-index: 1;
         }
 
-        /* Rock styling */
+        /* Quarry floor */
+        body::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 25%;
+            background:
+                linear-gradient(180deg, transparent 0%, rgba(60,50,40,0.6) 30%, rgba(50,40,30,0.8) 100%),
+                radial-gradient(ellipse at 20% 80%, rgba(70,60,50,0.4) 0%, transparent 40%),
+                radial-gradient(ellipse at 80% 90%, rgba(80,70,60,0.3) 0%, transparent 35%);
+            box-shadow: inset 0 20px 40px rgba(0,0,0,0.5);
+            z-index: 1;
+        }
+
+        /* Rock styling - more jagged */
         .rock {
             position: absolute;
-            border-radius: 45% 55% 52% 48% / 48% 45% 55% 52%;
+            border-radius: 30% 70% 20% 80% / 60% 40% 70% 30%;
             background: linear-gradient(135deg,
                 rgba(90, 85, 80, 0.9) 0%,
                 rgba(120, 110, 100, 0.8) 40%,
@@ -51,7 +67,14 @@
                 inset 5px 5px 10px rgba(150, 140, 130, 0.3),
                 0 15px 35px rgba(0, 0, 0, 0.4);
             animation: float 6s ease-in-out infinite;
-            transition: all 0.5s ease;
+            transition: transform 0.1s ease-out;
+            cursor: pointer;
+            clip-path: polygon(
+                10% 0%, 30% 5%, 50% 0%, 70% 8%, 85% 3%, 100% 15%,
+                95% 35%, 100% 55%, 90% 70%, 95% 85%, 85% 100%,
+                60% 95%, 40% 100%, 20% 92%, 5% 100%, 0% 80%,
+                8% 60%, 0% 40%, 5% 20%
+            );
         }
 
         /* Rock texture */
@@ -157,47 +180,53 @@
             }
         }
 
+        /* Vibration animation when files are selected */
+        @keyframes vibrate {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-2px, -2px) rotate(-1deg); }
+            20% { transform: translate(2px, 1px) rotate(1deg); }
+            30% { transform: translate(-1px, 2px) rotate(-0.5deg); }
+            40% { transform: translate(2px, -1px) rotate(0.5deg); }
+            50% { transform: translate(-2px, 1px) rotate(-1deg); }
+            60% { transform: translate(1px, 2px) rotate(1deg); }
+            70% { transform: translate(-1px, -2px) rotate(-0.5deg); }
+            80% { transform: translate(2px, 2px) rotate(0.5deg); }
+            90% { transform: translate(-2px, -1px) rotate(-1deg); }
+        }
+
+        .rock.vibrating {
+            animation: vibrate 0.3s ease-in-out infinite !important;
+        }
+
         /* Sand particle */
         .sand-particle {
             position: absolute;
-            width: 3px;
-            height: 3px;
+            width: 4px;
+            height: 4px;
             background: rgba(194, 178, 128, 0.9);
             border-radius: 50%;
             pointer-events: none;
             z-index: 5;
         }
 
-        /* Rock burst animation */
-        @keyframes rockBurst {
+        /* Firework explosion animation */
+        @keyframes rockFirework {
             0% {
                 transform: scale(1) rotate(0deg);
                 opacity: 1;
             }
-            50% {
-                transform: scale(1.3) rotate(180deg);
-                opacity: 0.7;
+            30% {
+                transform: scale(1.5) rotate(90deg);
+                opacity: 0.9;
             }
             100% {
-                transform: scale(0) rotate(360deg);
+                transform: scale(0.1) rotate(360deg);
                 opacity: 0;
             }
         }
 
         .rock.bursting {
-            animation: rockBurst 0.6s ease-out forwards;
-        }
-
-        /* Sand falling animation */
-        @keyframes sandFall {
-            0% {
-                transform: translateY(0) translateX(0) rotate(0deg);
-                opacity: 1;
-            }
-            100% {
-                transform: translateY(100vh) translateX(var(--drift)) rotate(720deg);
-                opacity: 0.3;
-            }
+            animation: rockFirework 0.8s ease-out forwards;
         }
 
         .container {
@@ -512,12 +541,79 @@
         const WEBHOOK_URL = 'https://honeywolf.app.n8n.cloud/webhook/8a1875b4-88c6-4880-a95d-9b68383619a6';
 
         let selectedFiles = [];
+        let mouseX = 0;
+        let mouseY = 0;
+        const rocks = [];
 
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const fileList = document.getElementById('fileList');
         const clearBtn = document.getElementById('clearBtn');
         const processBtn = document.getElementById('processBtn');
+
+        // Track mouse position
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        // Initialize rock elements with physics
+        document.addEventListener('DOMContentLoaded', () => {
+            const rockElements = document.querySelectorAll('.rock');
+            rockElements.forEach((rock, index) => {
+                const rect = rock.getBoundingClientRect();
+                rocks.push({
+                    element: rock,
+                    x: rect.left + rect.width / 2,
+                    y: rect.top + rect.height / 2,
+                    vx: 0,
+                    vy: 0,
+                    originalX: rect.left + rect.width / 2,
+                    originalY: rect.top + rect.height / 2
+                });
+            });
+            animateRocks();
+        });
+
+        // Rock repelling animation
+        function animateRocks() {
+            rocks.forEach((rock, index) => {
+                const rect = rock.element.getBoundingClientRect();
+                rock.x = rect.left + rect.width / 2;
+                rock.y = rect.top + rect.height / 2;
+
+                // Calculate distance from mouse
+                const dx = rock.x - mouseX;
+                const dy = rock.y - mouseY;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                const repelRadius = 150;
+
+                if (distance < repelRadius && distance > 0) {
+                    // Repel away from cursor
+                    const force = (repelRadius - distance) / repelRadius;
+                    const angle = Math.atan2(dy, dx);
+                    rock.vx += Math.cos(angle) * force * 2;
+                    rock.vy += Math.sin(angle) * force * 2;
+                }
+
+                // Return to original position gently
+                const returnForce = 0.02;
+                rock.vx += (rock.originalX - rock.x) * returnForce;
+                rock.vy += (rock.originalY - rock.y) * returnForce;
+
+                // Apply friction
+                rock.vx *= 0.95;
+                rock.vy *= 0.95;
+
+                // Update position
+                const currentLeft = parseFloat(rock.element.style.left || rock.element.offsetLeft);
+                const currentTop = parseFloat(rock.element.style.top || rock.element.offsetTop);
+                rock.element.style.left = (currentLeft + rock.vx) + 'px';
+                rock.element.style.top = (currentTop + rock.vy) + 'px';
+            });
+
+            requestAnimationFrame(animateRocks);
+        }
         const statusMessage = document.getElementById('statusMessage');
         const progressBar = document.getElementById('progressBar');
         const progressFill = document.getElementById('progressFill');
@@ -557,7 +653,15 @@
             selectedFiles = [...selectedFiles, ...pdfFiles];
             updateFileList();
             showStatus(`${pdfFiles.length} file(s) added`, 'success');
-            setTimeout(() => hideStatus(), 2000);
+
+            // Make rocks vibrate when files are uploaded
+            const rockElements = document.querySelectorAll('.rock');
+            rockElements.forEach(rock => rock.classList.add('vibrating'));
+
+            setTimeout(() => {
+                rockElements.forEach(rock => rock.classList.remove('vibrating'));
+                hideStatus();
+            }, 2000);
         }
 
         function updateFileList() {
@@ -599,11 +703,11 @@
             statusMessage.className = 'status-message';
         }
 
-        // Rock burst and sand animation
+        // Firework explosion and sand animation
         function burstRocksIntoSand() {
-            const rocks = document.querySelectorAll('.rock');
+            const rockElements = document.querySelectorAll('.rock');
 
-            rocks.forEach((rock, index) => {
+            rockElements.forEach((rock, index) => {
                 setTimeout(() => {
                     // Get rock position
                     const rect = rock.getBoundingClientRect();
@@ -613,43 +717,31 @@
                     // Add bursting class
                     rock.classList.add('bursting');
 
-                    // Create sand particles
-                    const particleCount = 50 + Math.random() * 30; // 50-80 particles per rock
+                    // Create firework-style explosion
+                    const particleCount = 80 + Math.random() * 40; // 80-120 particles per rock
 
                     for (let i = 0; i < particleCount; i++) {
                         setTimeout(() => {
-                            createSandParticle(centerX, centerY);
-                        }, i * 10); // Stagger particle creation
+                            createFireworkParticle(centerX, centerY);
+                        }, i * 5); // Faster stagger for firework effect
                     }
 
                     // Remove rock after burst
                     setTimeout(() => {
                         rock.style.display = 'none';
-                    }, 600);
-                }, index * 150); // Stagger rock bursts
+                    }, 800);
+                }, index * 200); // Stagger rock bursts
             });
         }
 
-        function createSandParticle(startX, startY) {
+        function createFireworkParticle(startX, startY) {
             const particle = document.createElement('div');
             particle.className = 'sand-particle';
 
             // Random size variation
-            const size = 2 + Math.random() * 3;
+            const size = 3 + Math.random() * 4;
             particle.style.width = size + 'px';
             particle.style.height = size + 'px';
-
-            // Starting position
-            particle.style.left = startX + 'px';
-            particle.style.top = startY + 'px';
-
-            // Random drift
-            const drift = (Math.random() - 0.5) * 200;
-            particle.style.setProperty('--drift', drift + 'px');
-
-            // Random fall duration
-            const duration = 2 + Math.random() * 2;
-            particle.style.animation = `sandFall ${duration}s ease-in forwards`;
 
             // Color variation
             const colors = [
@@ -657,16 +749,82 @@
                 'rgba(210, 180, 140, 0.9)',
                 'rgba(222, 184, 135, 0.9)',
                 'rgba(188, 143, 143, 0.8)',
-                'rgba(205, 192, 176, 0.9)'
+                'rgba(205, 192, 176, 0.9)',
+                'rgba(218, 165, 32, 0.9)'
             ];
             particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            particle.style.boxShadow = `0 0 ${size * 2}px ${colors[Math.floor(Math.random() * colors.length)]}`;
 
             document.body.appendChild(particle);
 
-            // Remove particle after animation
-            setTimeout(() => {
-                particle.remove();
-            }, duration * 1000);
+            // Firework physics - shoot up and out, then fall with bouncing
+            const angle = Math.random() * Math.PI * 2; // Random direction
+            const speed = 3 + Math.random() * 5; // Initial speed
+            let vx = Math.cos(angle) * speed;
+            let vy = Math.sin(angle) * speed - (2 + Math.random() * 3); // Upward bias
+
+            let x = startX;
+            let y = startY;
+            let gravity = 0.15;
+            let bounce = 0.6; // Bounce coefficient
+            let friction = 0.99;
+
+            function animateParticle() {
+                // Apply gravity
+                vy += gravity;
+
+                // Apply friction
+                vx *= friction;
+
+                // Update position
+                x += vx;
+                y += vy;
+
+                particle.style.left = x + 'px';
+                particle.style.top = y + 'px';
+
+                // Bounce off bottom (quarry floor at 75% of screen height)
+                const floorY = window.innerHeight * 0.85;
+                if (y > floorY) {
+                    y = floorY;
+                    vy = -vy * bounce;
+                    vx *= 0.9; // Slow down on bounce
+
+                    // Stop bouncing if too slow
+                    if (Math.abs(vy) < 0.5) {
+                        vy = 0;
+                        particle.style.opacity = Math.max(0, parseFloat(particle.style.opacity || 1) - 0.02);
+                    }
+                }
+
+                // Bounce off left wall
+                if (x < 0) {
+                    x = 0;
+                    vx = -vx * bounce;
+                }
+
+                // Bounce off right wall
+                if (x > window.innerWidth) {
+                    x = window.innerWidth;
+                    vx = -vx * bounce;
+                }
+
+                // Bounce off top
+                if (y < 0) {
+                    y = 0;
+                    vy = -vy * bounce;
+                }
+
+                // Continue animation or remove
+                if (parseFloat(particle.style.opacity || 1) > 0.05 && (Math.abs(vx) > 0.1 || Math.abs(vy) > 0.1 || y < floorY)) {
+                    requestAnimationFrame(animateParticle);
+                } else {
+                    particle.remove();
+                }
+            }
+
+            particle.style.opacity = '1';
+            animateParticle();
         }
 
         function resetRocks() {
